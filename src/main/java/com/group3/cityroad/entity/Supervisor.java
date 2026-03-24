@@ -1,6 +1,9 @@
 package com.group3.cityroad.entity;
 
 import jakarta.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Supervisor — manages repair requests for their assigned branch office.
  * Can assess requests, update progress, and view schedules.
@@ -26,12 +29,19 @@ public class Supervisor extends User {
 
     // --- Methods (signatures from class diagram) ---
 
+    public List<RepairRequest> viewNewRequests() {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
 
     public void assignPriority() {
         throw new UnsupportedOperationException("Not yet implemented");
     }
 
     public void updateProgress() {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    public List<RepairSchedule> viewSchedules() {
         throw new UnsupportedOperationException("Not yet implemented");
     }
 

@@ -5,6 +5,8 @@ import jakarta.persistence.*;
 
 /**
  * Base entity for all user types.
+ * Single-table inheritance: all subtypes share the "users" table.
+ * The "role" column acts as the discriminator.
  */
 @Entity
 @Table(name = "users")
@@ -37,6 +39,18 @@ public abstract class User {
         this.username = username;
         this.name = name;
         this.passwordHash = passwordHash;
+    }
+
+    // --- Methods (signatures from class diagram) ---
+
+    public boolean login(String username, String password) {
+        // implemented in AuthenticationService
+        throw new UnsupportedOperationException("Use AuthenticationService.login()");
+    }
+
+    public void logout() {
+        // implemented in AuthenticationService
+        throw new UnsupportedOperationException("Use AuthenticationService.revokeSession()");
     }
 
     // --- Getters and Setters ---

@@ -1,6 +1,9 @@
 package com.group3.cityroad.entity;
 
 import jakarta.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Resident — can submit repair requests and track their progress.
  * Discriminator value matches RoleEnum.RESIDENT.
@@ -21,6 +24,10 @@ public class Resident extends User {
     @Column
     private String area;
 
+    // A resident can have many repair requests
+    @OneToMany(mappedBy = "resident", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<RepairRequest> repairRequests = new ArrayList<>();
+
     // --- Constructors ---
 
     public Resident() {}
@@ -36,10 +43,12 @@ public class Resident extends User {
     // --- Methods (signatures from class diagram) ---
 
     public void submitRequest() {
+        // delegated to RepairRequest / SchedulingService
         throw new UnsupportedOperationException("Not yet implemented");
     }
 
     public void trackProgress() {
+        // delegated to RepairRequest / ProgressUpdate
         throw new UnsupportedOperationException("Not yet implemented");
     }
 
@@ -56,4 +65,9 @@ public class Resident extends User {
 
     public String getArea() { return area; }
     public void setArea(String area) { this.area = area; }
+
+    public List<RepairRequest> getRepairRequests() { return repairRequests; }
+    public void setRepairRequests(List<RepairRequest> repairRequests) {
+        this.repairRequests = repairRequests;
+    }
 }
