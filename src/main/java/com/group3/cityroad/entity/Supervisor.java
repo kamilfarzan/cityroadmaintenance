@@ -1,12 +1,13 @@
 package com.group3.cityroad.entity;
 
 import jakarta.persistence.*;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Supervisor — manages repair requests for their assigned branch office.
  * Can assess requests, update progress, and view schedules.
+ *
+ * Relationship: Many supervisors can belong to one BranchOffice.
  */
 @Entity
 @DiscriminatorValue("SUPERVISOR")
@@ -15,16 +16,21 @@ public class Supervisor extends User {
     @Column
     private String supervisorId;
 
-    @Column
-    private String branchOfficeId;   // FK reference — kept as String for loose coupling in skeleton
+    // Proper JPA association — replaces the old branchOfficeId: String
+    // LAZY fetch: BranchOffice data is only loaded from DB when you actually call getBranchOffice()
+    // nullable = false: a supervisor must always belong to a branch office
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "branch_office_id", nullable = false)
+    private BranchOffice branchOffice;
 
     // --- Constructors ---
 
     public Supervisor() {}
 
-    public Supervisor(String username, String name, String passwordHash, String branchOfficeId) {
+    public Supervisor(String username, String name, String passwordHash,
+                      BranchOffice branchOffice) {
         super(username, name, passwordHash);
-        this.branchOfficeId = branchOfficeId;
+        this.branchOffice = branchOffice;
     }
 
     // --- Methods (signatures from class diagram) ---
@@ -54,6 +60,6 @@ public class Supervisor extends User {
     public String getSupervisorId() { return supervisorId; }
     public void setSupervisorId(String supervisorId) { this.supervisorId = supervisorId; }
 
-    public String getBranchOfficeId() { return branchOfficeId; }
-    public void setBranchOfficeId(String branchOfficeId) { this.branchOfficeId = branchOfficeId; }
+    public BranchOffice getBranchOffice() { return branchOffice; }
+    public void setBranchOffice(BranchOffice branchOffice) { this.branchOffice = branchOffice; }
 }
