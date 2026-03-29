@@ -15,4 +15,6 @@ public interface RepairRequestRepository extends JpaRepository<RepairRequest, Lo
     List<RepairRequest> findByBranchOfficeAndStatus(BranchOffice branchOffice, StatusEnum status);
     List<RepairRequest> findByResident(Resident resident);
     List<RepairRequest> findBySubmissionDateBetween(LocalDate startDate, LocalDate endDate);
+    List<RepairRequest> findByStatusAndSubmissionDateBetween(StatusEnum status, LocalDate startDate, LocalDate endDate);
+    List<RepairRequest> findByStatusIn(List<StatusEnum> statuses);
 }

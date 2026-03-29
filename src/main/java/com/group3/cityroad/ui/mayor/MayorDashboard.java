@@ -20,7 +20,7 @@ public class MayorDashboard extends ProtectedView {
         H2 header = new H2("Mayor Operations");
         
         HorizontalLayout menu = new HorizontalLayout(
-            new Button("Generate Reports")
+            new Button("Generate Reports", e -> getUI().ifPresent(ui -> ui.navigate(MayorReportsView.class)))
         );
         
         add(header, menu);

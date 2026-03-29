@@ -11,4 +11,5 @@ import java.util.List;
 public interface NotificationRepository extends JpaRepository<Notification, Long> {
     List<Notification> findByResidentAndNotifStatus(Resident resident, String notifStatus);
     List<Notification> findByNotifStatus(String notifStatus);
+    List<Notification> findByResidentOrderByCreatedAtDesc(Resident resident);
 }

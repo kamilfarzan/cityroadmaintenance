@@ -22,7 +22,8 @@ public class ResidentDashboard extends ProtectedView {
         HorizontalLayout menu = new HorizontalLayout(
             new Button("Browse City Info", e -> getUI().ifPresent(ui -> ui.navigate(com.group3.cityroad.ui.publicinfo.CityInfoView.class))),
             new Button("Submit Repair Request", e -> getUI().ifPresent(ui -> ui.navigate(SubmitRepairRequestView.class))),
-            new Button("Track My Requests", e -> getUI().ifPresent(ui -> ui.navigate(MyRepairRequestsView.class)))
+            new Button("Track My Requests", e -> getUI().ifPresent(ui -> ui.navigate(MyRepairRequestsView.class))),
+            new Button("Check Notifications", e -> getUI().ifPresent(ui -> ui.navigate(MyNotificationsView.class)))
         );
         
         add(header, menu);
