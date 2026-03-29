@@ -18,9 +18,9 @@ public class Supervisor extends User {
 
     // Proper JPA association — replaces the old branchOfficeId: String
     // LAZY fetch: BranchOffice data is only loaded from DB when you actually call getBranchOffice()
-    // nullable = false: a supervisor must always belong to a branch office
+    // nullable = false removed because single-table inheritance requires subclass fields to be nullable in DB
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "branch_office_id", nullable = false)
+    @JoinColumn(name = "branch_office_id")
     private BranchOffice branchOffice;
 
     // --- Constructors ---
