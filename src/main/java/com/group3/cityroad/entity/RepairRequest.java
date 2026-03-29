@@ -40,7 +40,7 @@ public class RepairRequest {
 
     // --- Relationships ---
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "resident_id_fk")
     private Resident resident;
 
@@ -48,13 +48,13 @@ public class RepairRequest {
     @JoinColumn(name = "branch_office_id")
     private BranchOffice branchOffice;
 
-    @OneToOne(mappedBy = "repairRequest", cascade = CascadeType.ALL)
+    @OneToOne(mappedBy = "repairRequest", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private RoadAssessment roadAssessment;
 
     @OneToOne(mappedBy = "repairRequest", cascade = CascadeType.ALL)
     private RepairSchedule repairSchedule;
 
-    @OneToMany(mappedBy = "repairRequest", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "repairRequest", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<ProgressUpdate> progressUpdates = new ArrayList<>();
 
     // --- Constructors ---

@@ -21,6 +21,10 @@ public class CityInformationService {
                 .collect(Collectors.toList());
     }
 
+    public List<CityService> getAllServices() {
+        return cityServiceRepository.findAll();
+    }
+
     public List<CityService> findByCategory(String category) {
         return cityServiceRepository.findByCategory(category);
     }

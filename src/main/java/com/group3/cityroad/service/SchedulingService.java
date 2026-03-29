@@ -5,6 +5,7 @@ import com.group3.cityroad.entity.RepairRequest;
 import com.group3.cityroad.entity.RepairSchedule;
 import com.group3.cityroad.entity.RoadAssessment;
 import com.group3.cityroad.enums.StatusEnum;
+import com.group3.cityroad.repository.RepairRequestRepository;
 import com.group3.cityroad.repository.RepairScheduleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -18,9 +19,12 @@ public class SchedulingService {
     private RepairScheduleRepository repairScheduleRepository;
     
     @Autowired
+    private RepairRequestRepository repairRequestRepository;
+    
+    @Autowired
     private ResourceService resourceService;
 
-    public ScheduleResultDTO scheduleRepair(RoadAssessment assessment) {
+    public ScheduleResultDTO scheduleRepair(RoadAssessment assessment, LocalDate startDate, LocalDate endDate) {
         RepairRequest request = assessment.getRepairRequest();
         RepairSchedule schedule = new RepairSchedule();
         schedule.setRepairRequest(request);
@@ -32,17 +36,27 @@ public class SchedulingService {
         boolean resourcesAvailable = resourceService.checkAvailability(assessment.getResourceRequirement());
         
         if (resourcesAvailable) {
-            schedule.setStartDate(LocalDate.now().plusDays(1));
-            schedule.setEndDate(LocalDate.now().plusDays(3));
+            schedule.setStartDate(startDate != null ? startDate : LocalDate.now().plusDays(1));
+            schedule.setEndDate(endDate != null ? endDate : LocalDate.now().plusDays(3));
             schedule.setScheduleStatus(StatusEnum.SCHEDULED);
             schedule.setIsDeferred(false);
             
             request.setStatus(StatusEnum.SCHEDULED);
+            repairRequestRepository.save(request); // Saving the parent request!
+            
             repairScheduleRepository.save(schedule);
+            
+            // Allocate resources since they are available
+            resourceService.allocateResources(assessment.getResourceRequirement());
+            
             return new ScheduleResultDTO(true, "Repair scheduled successfully", schedule);
         } else {
-            schedule.setScheduleStatus(StatusEnum.UNDER_REVIEW); // Need alternative status from enum
+            schedule.setScheduleStatus(StatusEnum.UNDER_REVIEW);
             schedule.setIsDeferred(true);
+            
+            request.setStatus(StatusEnum.UNDER_REVIEW);
+            repairRequestRepository.save(request); // Save status
+            
             repairScheduleRepository.save(schedule);
             return new ScheduleResultDTO(false, "Insufficient resources, deferred", schedule);
         }

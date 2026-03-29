@@ -48,13 +48,13 @@ public class AssessmentService {
         return PriorityEnum.DEFERRED;
     }
 
-    public void submitAssessment(RoadAssessment assessment, ResourceRequirement reqs) {
+    public void submitAssessment(RoadAssessment assessment, ResourceRequirement reqs, LocalDate startDate, LocalDate endDate) {
         assessment.setResourceRequirement(reqs);
         reqs.setRoadAssessment(assessment);
         
         roadAssessmentRepository.save(assessment);
         
-        // Trigger scheduling
-        schedulingService.scheduleRepair(assessment);
+        // Trigger scheduling with custom dates
+        schedulingService.scheduleRepair(assessment, startDate, endDate);
     }
 }

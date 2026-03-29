@@ -21,9 +21,7 @@ public class AdminDashboard extends ProtectedView {
         
         HorizontalLayout menu = new HorizontalLayout(
             new Button("Manage Users", e -> getUI().ifPresent(ui -> ui.navigate(AdminUserManagementView.class))),
-            new Button("Manage Manpower"),
-            new Button("Manage Machines"),
-            new Button("Manage Materials")
+            new Button("Manage Resources", e -> getUI().ifPresent(ui -> ui.navigate(ManageResourcesView.class)))
         );
         
         add(header, menu);

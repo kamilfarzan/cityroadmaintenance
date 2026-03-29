@@ -1,6 +1,11 @@
 package com.group3.cityroad.ui;
 
 import com.group3.cityroad.session.SessionManager;
+import com.group3.cityroad.entity.User;
+import com.group3.cityroad.ui.admin.AdminDashboard;
+import com.group3.cityroad.ui.mayor.MayorDashboard;
+import com.group3.cityroad.ui.resident.ResidentDashboard;
+import com.group3.cityroad.ui.supervisor.SupervisorDashboard;
 import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.applayout.DrawerToggle;
 import com.vaadin.flow.component.button.Button;
@@ -36,21 +41,32 @@ public class MainLayout extends AppLayout {
 
     private void createDrawer() {
         VerticalLayout layout = new VerticalLayout();
+        RouterLink cityInfoLink = new RouterLink("City Info", com.group3.cityroad.ui.publicinfo.CityInfoView.class);
         
         if (sessionManager.isAuthenticated()) {
-            Span userSpan = new Span("Welcome, " + sessionManager.getCurrentUser().getName());
+            User user = sessionManager.getCurrentUser();
+            Span userSpan = new Span("Welcome, " + user.getName());
             userSpan.getStyle().set("font-weight", "bold");
+            
+            Class<? extends com.vaadin.flow.component.Component> dashboardClass = ResidentDashboard.class;
+            switch (user.getRole()) {
+                case RESIDENT -> dashboardClass = ResidentDashboard.class;
+                case SUPERVISOR -> dashboardClass = SupervisorDashboard.class;
+                case ADMINISTRATOR -> dashboardClass = AdminDashboard.class;
+                case MAYOR -> dashboardClass = MayorDashboard.class;
+            }
+            RouterLink dashboardLink = new RouterLink("Dashboard", dashboardClass);
             
             Button logoutButton = new Button("Logout", e -> {
                 sessionManager.logout();
                 getUI().ifPresent(ui -> ui.getPage().setLocation("/login"));
             });
             
-            layout.add(userSpan, logoutButton);
+            layout.add(cityInfoLink, dashboardLink, userSpan, logoutButton);
         } else {
             RouterLink loginLink = new RouterLink("Login", LoginView.class);
             RouterLink signupLink = new RouterLink("Sign Up", SignupView.class);
-            layout.add(loginLink, signupLink);
+            layout.add(cityInfoLink, loginLink, signupLink);
         }
         
         addToDrawer(layout);

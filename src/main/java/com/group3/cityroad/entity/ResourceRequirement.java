@@ -19,16 +19,22 @@ public class ResourceRequirement {
     private String assessmentId;     // denormalized for quick lookup
 
     @Column(nullable = false)
-    private Integer quantityNeeded;
+    private Integer personnelQuantity = 0;
+    
+    @Column
+    private String personnelType;
 
+    @Column(nullable = false)
+    private Integer machineQuantity = 0;
+    
     @Column
     private String machineType;
 
+    @Column(nullable = false)
+    private Integer materialQuantity = 0;
+    
     @Column
     private String materialType;
-
-    @Column
-    private String personnelType;
 
     // --- Relationships ---
 
@@ -40,14 +46,21 @@ public class ResourceRequirement {
 
     public ResourceRequirement() {}
 
-    public ResourceRequirement(RoadAssessment roadAssessment, Integer quantityNeeded,
-                                String machineType, String materialType, String personnelType) {
+    public ResourceRequirement(RoadAssessment roadAssessment, 
+                               Integer personnelQuantity, String personnelType,
+                               Integer machineQuantity, String machineType,
+                               Integer materialQuantity, String materialType) {
         this.roadAssessment = roadAssessment;
         this.assessmentId = String.valueOf(roadAssessment.getAssessmentId());
-        this.quantityNeeded = quantityNeeded;
-        this.machineType = machineType;
-        this.materialType = materialType;
+        
+        this.personnelQuantity = personnelQuantity;
         this.personnelType = personnelType;
+        
+        this.machineQuantity = machineQuantity;
+        this.machineType = machineType;
+        
+        this.materialQuantity = materialQuantity;
+        this.materialType = materialType;
     }
 
     // --- Methods (signatures from class diagram) ---
@@ -67,17 +80,23 @@ public class ResourceRequirement {
     public String getAssessmentId() { return assessmentId; }
     public void setAssessmentId(String assessmentId) { this.assessmentId = assessmentId; }
 
-    public Integer getQuantityNeeded() { return quantityNeeded; }
-    public void setQuantityNeeded(Integer quantityNeeded) { this.quantityNeeded = quantityNeeded; }
+    public Integer getPersonnelQuantity() { return personnelQuantity; }
+    public void setPersonnelQuantity(Integer personnelQuantity) { this.personnelQuantity = personnelQuantity; }
+
+    public String getPersonnelType() { return personnelType; }
+    public void setPersonnelType(String personnelType) { this.personnelType = personnelType; }
+
+    public Integer getMachineQuantity() { return machineQuantity; }
+    public void setMachineQuantity(Integer machineQuantity) { this.machineQuantity = machineQuantity; }
 
     public String getMachineType() { return machineType; }
     public void setMachineType(String machineType) { this.machineType = machineType; }
 
+    public Integer getMaterialQuantity() { return materialQuantity; }
+    public void setMaterialQuantity(Integer materialQuantity) { this.materialQuantity = materialQuantity; }
+
     public String getMaterialType() { return materialType; }
     public void setMaterialType(String materialType) { this.materialType = materialType; }
-
-    public String getPersonnelType() { return personnelType; }
-    public void setPersonnelType(String personnelType) { this.personnelType = personnelType; }
 
     public RoadAssessment getRoadAssessment() { return roadAssessment; }
     public void setRoadAssessment(RoadAssessment roadAssessment) {

@@ -42,7 +42,7 @@ public class RepairSchedule {
 
     // --- Relationships ---
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "repair_request_id", nullable = false)
     private RepairRequest repairRequest;
 

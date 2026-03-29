@@ -34,9 +34,18 @@ public class ProgressUpdateService {
         update.setStatusFlag(statusFlag);
         update.setTimestamp(LocalDateTime.now());
         
+        // Sync the passed field status directly to the Request and Schedule
+        request.setStatus(statusFlag);
+        if (request.getRepairSchedule() != null) {
+            request.getRepairSchedule().setScheduleStatus(statusFlag);
+        }
+
         if (pct >= 100f || statusFlag == StatusEnum.COMPLETED) {
             update.setIsComplete(true);
             markComplete(request);
+        } else {
+            // Save the synchronized in-progress/other statuses directly
+            repairRequestRepository.save(request);
         }
         
         return progressUpdateRepository.save(update);
@@ -44,6 +53,9 @@ public class ProgressUpdateService {
 
     public void markComplete(RepairRequest request) {
         request.setStatus(StatusEnum.COMPLETED);
+        if (request.getRepairSchedule() != null) {
+            request.getRepairSchedule().setScheduleStatus(StatusEnum.COMPLETED);
+        }
         repairRequestRepository.save(request);
         
         if(request.getResident() != null) {

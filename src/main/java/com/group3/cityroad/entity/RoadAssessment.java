@@ -49,7 +49,7 @@ public class RoadAssessment {
     @JoinColumn(name = "repair_request_id", nullable = false)
     private RepairRequest repairRequest;
 
-    @OneToOne(mappedBy = "roadAssessment", cascade = CascadeType.ALL)
+    @OneToOne(mappedBy = "roadAssessment", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private ResourceRequirement resourceRequirement;
 
     // --- Constructors ---

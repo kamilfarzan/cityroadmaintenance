@@ -12,4 +12,5 @@ import java.util.List;
 public interface RepairScheduleRepository extends JpaRepository<RepairSchedule, Long> {
     List<RepairSchedule> findByScheduleStatus(StatusEnum status);
     List<RepairSchedule> findByPriority(PriorityEnum priority);
+    List<RepairSchedule> findBySupervisorId(String supervisorId);
 }

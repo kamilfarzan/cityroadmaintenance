@@ -20,10 +20,9 @@ public class SupervisorDashboard extends ProtectedView {
         H2 header = new H2("Supervisor Operations");
         
         HorizontalLayout menu = new HorizontalLayout(
-            new Button("View New Requests"),
-            new Button("Assess Request"),
-            new Button("Update Progress"),
-            new Button("View Schedule")
+            new Button("Assess Requests", e -> getUI().ifPresent(ui -> ui.navigate(AssessRequestsView.class))),
+            new Button("Update Progress", e -> getUI().ifPresent(ui -> ui.navigate(UpdateProgressView.class))),
+            new Button("View Schedules", e -> getUI().ifPresent(ui -> ui.navigate(SupervisorSchedulesView.class)))
         );
         
         add(header, menu);
