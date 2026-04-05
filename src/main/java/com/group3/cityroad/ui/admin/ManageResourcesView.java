@@ -83,7 +83,6 @@ public class ManageResourcesView extends ProtectedView {
         dialog.setHeaderTitle("Manage Quantity: " + resource.getName());
 
         IntegerField quantityField = new IntegerField("Set Total Assigned Quantity");
-        quantityField.setMin(0);
         quantityField.setStepButtonsVisible(true);
         quantityField.setValue(resource.getQuantity() != null ? resource.getQuantity() : 0);
 

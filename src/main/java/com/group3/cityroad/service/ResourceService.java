@@ -5,6 +5,10 @@ import com.group3.cityroad.entity.Manpower;
 import com.group3.cityroad.entity.RawMaterial;
 import com.group3.cityroad.entity.Resource;
 import com.group3.cityroad.entity.ResourceRequirement;
+import com.group3.cityroad.entity.RepairSchedule;
+import com.group3.cityroad.enums.StatusEnum;
+import com.group3.cityroad.repository.RepairRequestRepository;
+import com.group3.cityroad.repository.RepairScheduleRepository;
 import com.group3.cityroad.repository.ResourceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -16,6 +20,12 @@ public class ResourceService {
 
     @Autowired
     private ResourceRepository resourceRepository;
+
+    @Autowired
+    private RepairScheduleRepository repairScheduleRepository;
+
+    @Autowired
+    private RepairRequestRepository repairRequestRepository;
 
     public List<Resource> getStatus() {
         return resourceRepository.findAll();
@@ -29,6 +39,9 @@ public class ResourceService {
         resourceRepository.findById(resourceId).ifPresent(r -> {
             r.setQuantity(newQuantity);
             resourceRepository.save(r);
+            if (newQuantity < 0) {
+                enforceResourceDeficits(r);
+            }
         });
     }
 
@@ -94,6 +107,66 @@ public class ResourceService {
                     r.setQuantity(r.getQuantity() - reqs.getMaterialQuantity());
                     resourceRepository.save(r);
                 });
+        }
+    }
+
+    private void enforceResourceDeficits(Resource changedResource) {
+        // Crisis check to seize resources from active jobs back into the pool until resolved
+        List<RepairSchedule> scheduledJobs = repairScheduleRepository.findAll().stream()
+                .filter(s -> s.getScheduleStatus() == StatusEnum.SCHEDULED)
+                .toList();
+
+        for (RepairSchedule schedule : scheduledJobs) {
+            ResourceRequirement req = schedule.getRepairRequest().getRoadAssessment().getResourceRequirement();
+            if (req == null) continue;
+
+            boolean affected = false;
+
+            if (changedResource instanceof Manpower && ((Manpower) changedResource).getPersonnelType().equals(req.getPersonnelType())) {
+                affected = true;
+            } else if (changedResource instanceof Machine && ((Machine) changedResource).getMachineType().equals(req.getMachineType())) {
+                affected = true;
+            } else if (changedResource instanceof RawMaterial && ((RawMaterial) changedResource).getMaterialType().equals(req.getMaterialType())) {
+                affected = true;
+            }
+
+            if (affected) {
+                // Return all resources assigned to this job back to global pools
+                List<Resource> inventory = resourceRepository.findAll();
+                
+                if (req.getPersonnelQuantity() > 0) {
+                    inventory.stream()
+                        .filter(r -> r instanceof Manpower && ((Manpower) r).getPersonnelType().equals(req.getPersonnelType()))
+                        .findFirst()
+                        .ifPresent(r -> { r.setQuantity(r.getQuantity() + req.getPersonnelQuantity()); resourceRepository.save(r); });
+                }
+                if (req.getMachineQuantity() > 0) {
+                    inventory.stream()
+                        .filter(r -> r instanceof Machine && ((Machine) r).getMachineType().equals(req.getMachineType()))
+                        .findFirst()
+                        .ifPresent(r -> { r.setQuantity(r.getQuantity() + req.getMachineQuantity()); resourceRepository.save(r); });
+                }
+                if (req.getMaterialQuantity() > 0) {
+                    inventory.stream()
+                        .filter(r -> r instanceof RawMaterial && ((RawMaterial) r).getMaterialType().equals(req.getMaterialType()))
+                        .findFirst()
+                        .ifPresent(r -> { r.setQuantity(r.getQuantity() + req.getMaterialQuantity()); resourceRepository.save(r); });
+                }
+
+                // Defer the schedule
+                schedule.setScheduleStatus(StatusEnum.UNDER_REVIEW);
+                schedule.setIsDeferred(true);
+                schedule.getRepairRequest().setStatus(StatusEnum.UNDER_REVIEW);
+                
+                repairRequestRepository.save(schedule.getRepairRequest());
+                repairScheduleRepository.save(schedule);
+
+                // Stop stealing resources if the deficit has resolved
+                Resource currentRes = resourceRepository.findById(changedResource.getResourceId()).orElse(null);
+                if (currentRes != null && currentRes.getQuantity() >= 0) {
+                    break;
+                }
+            }
         }
     }
 }
