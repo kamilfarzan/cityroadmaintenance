@@ -73,7 +73,7 @@ public class AssessRequestsView extends ProtectedView {
             return assessBtn;
         }).setHeader("Action").setWidth("120px").setFlexGrow(0);
         
-        grid.setMaxWidth("1000px");
+        grid.setMaxWidth("100%");
     }
 
     private void refreshGrid() {
